@@ -1,29 +1,50 @@
 import streamlit as st
 import cv2
-from pyzbar.pyzbar import decode
+import numpy as np
+import streamlit as st
+from PIL import Image
+import numpy as np
 
 # Título do aplicativo
-st.title("Detecção de QR Code com Streamlit e OpenCV")
+st.title("Teste de Câmera")
 
-# Função para abrir a câmera e aguardar um QR Code
-def capture_qr_code():
-    cap = cv2.VideoCapture(0)  # 0 é o índice da câmera padrão (pode variar)
+# Campo de entrada para o número do prédio e da sala
+numero_predio = st.text_input("Digite o número do prédio:")
+numero_sala = st.text_input("Digite o número da sala:")
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
+# Função para detectar e ler código QR em uma imagem
+def detect_qr_code(cv2_img):
+    # Converte a imagem em escala de cinza
+    gray = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2GRAY)
 
-        # Decodifica o QR Code se estiver presente na imagem
-        decoded_objects = decode(frame)
+    # Inicializa o detector de código QR
+    qr_code_detector = cv2.QRCodeDetector()
 
-        if decoded_objects:
-            st.image(frame, channels="BGR", use_column_width=True)
-            st.write("QR Code detectado:", decoded_objects[0].data.decode("utf-8"))
-            break
+    # Detecta os códigos QR na imagem
+    decoded_info, points, _ = qr_code_detector.detectAndDecodeMulti(gray)
 
-    cap.release()
+    if decoded_info:
+        for info in decoded_info:
+            st.success(f'QR Code Data: {info}')
+            
+            # Desenha um retângulo ao redor do código QR na imagem
+            for point in points:
+                for i in range(4):
+                    cv2.line(cv2_img, tuple(point[i]), tuple(point[(i+1)%4]), (0, 255, 0), 3)
 
-# Botão para iniciar a detecção de QR Code
-if st.button("Aguardar QR Code"):
-    capture_qr_code()
+    return cv2_img
+
+st.title("Detecção de QR Code na Câmera")
+
+img_file_buffer = st.camera_input("Tire uma foto")
+
+if img_file_buffer is not None:
+    bytes_data = img_file_buffer.getvalue()
+    cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+
+    st.write("Tipo da imagem:", type(cv2_img))
+    st.write("Formato da imagem:", cv2_img.shape)
+
+    img_with_qr_code = detect_qr_code(cv2_img)
+
+    st.image(img_with_qr_code, channels="BGR")
