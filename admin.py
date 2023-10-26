@@ -1,94 +1,85 @@
 import streamlit as st
 import requests
+from PIL import Image
+from datetime import time
 
-# Título do aplicativo
-st.title("Painel de Admin")
+# Defina um ícone personalizado para a página
+st.set_page_config(
+    page_title="Painel de Admin",
+    page_icon=":key:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+
+# Estilize o título da página
+st.title("Bem-vindo ao Painel de Administração")
 
 # Criação das abas
 menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso"])
 
 # Aba "Cadastrar Usuário"
 if menu == "Cadastrar Usuário":
-    # Campo de entrada para o login de usuário
-    login_usuario = st.text_input("Digite o login de usuário:")
+    st.header("Cadastro de Usuário")
 
-    # Campo de entrada para o nome de usuário
-    nome_usuario = st.text_input("Digite o nome de usuário:")
+    # Campos de entrada para o login e o nome do usuário
+    login_usuario = st.text_input("Login de Usuário")
+    nome_usuario = st.text_input("Nome de Usuário")
 
-    # Campo de entrada para o nível de permisão de usuário
-    nivel_usuario = st.selectbox("Selecione o nível de permissão de usuário:", [1, 2, 3, 4, 5])
+    # Campo de entrada para o nível de permissão do usuário
+    nivel_usuario = st.selectbox("Nível de Permissão", [1, 2, 3, 4, 5])
 
-    # Botão para cadastrar usuário
-    if st.button("Cadastrar Usuário"):
-        # Se o login de usuário for infomado, então:
-        if login_usuario:
-            # Se o nome de usuário for infomado, então:
-            if nome_usuario:
-                # Realiza a requisição para o backend
-                response = requests.post(f"http://127.0.0.1:5000/usuario", json={"login": login_usuario, "nome": nome_usuario, "permissao": nivel_usuario})
-
-                # Se a resposta for 201, então:
-                if response.status_code == 201:
-                    st.success("Usuário cadastrado com sucesso.")
-
-                # Se a resposta for 400, então:
-                elif response.status_code == 400:
-                    st.warning("Usuário já cadastrado.")
-
-                # Se a resposta for diferente de 201 e 400, então:
-                else:
-                    st.warning("Erro ao cadastrar usuário.")
-
-            # Se o nome de usuário não for informado, então:
+    # Botão com estilo personalizado
+    if st.button("Cadastrar Usuário", key="cadastro_usuario"):
+        if login_usuario and nome_usuario:
+            # Realize a requisição para o backend
+            
+            response = requests.post(f"http://127.0.0.1:5000/usuario", json={"login": login_usuario, "nome": nome_usuario, "permissao": nivel_usuario})
+            if response.status_code == 201:
+                st.success("Usuário cadastrado com sucesso.")
+            elif response.status_code == 400:
+                st.warning("Usuário já cadastrado.")
             else:
-                st.warning("Por favor, insira um nome de usuário para cadastrar.")
-
-        # Se o login de usuário não for informado, então:
+                st.error("Erro ao cadastrar usuário. Tente novamente mais tarde.")
         else:
-            st.warning("Por favor, insira um login de usuário para cadastrar.")
+            st.warning("Por favor, preencha todos os campos.")
 
 # Aba "Cadastrar Porta"
 if menu == "Cadastrar Porta":
-    # Campo de entrada para o número do prédio
-    numero_predio = st.text_input("Digite o número do prédio:")
+    st.header("Cadastro de Porta")
 
-    # Campo de entrada para o número da sala
-    numero_sala = st.text_input("Digite o número da sala:")
+    # Campos de entrada para o número do prédio e da sala
+    numero_predio = st.text_input("Número do Prédio")
+    numero_sala = st.text_input("Número da Sala")
 
-    # Campo de entrada para o nível de permisão de acesso
-    nivel_acesso = st.selectbox("Selecione o nível de permissão de acesso:", [1, 2, 3, 4, 5])
+    # Campo de entrada para o nível de permissão de acesso
+    nivel_acesso = st.selectbox("Nível de Permissão de Acesso", [1, 2, 3, 4, 5])
 
-    # Campo de entrada para escrever as exceções de acesso (opcional)
-    excecoes_acesso = st.text_input("Digite as exceções de acesso (opcional):")
+    # Campo de entrada para exceções de acesso (opcional)
+    excecoes_acesso = st.text_input("Exceções de Acesso (opcional)")
 
-    # Convertendo as exceções de acesso para lista
-    excecoes_acesso = excecoes_acesso.split(", ")
-
-    # Botão para cadastrar porta
-    if st.button("Cadastrar Porta"):
-        # Se o número do prédio for infomado, então:
-        if numero_predio:
-            # Se o número da sala for infomado, então:
-            if numero_sala:
-                # Realiza a requisição para o backend
-                response = requests.post(f"http://127.0.0.1:5000/porta", json={"predio": int(numero_predio), "sala": int(numero_sala), "permissao": nivel_acesso, "excecoes": excecoes_acesso})
-
-                # Se a resposta for 201, então:
-                if response.status_code == 201:
-                    st.success("Porta cadastrada com sucesso.")
-
-                # Se a resposta for 400, então:
-                elif response.status_code == 400:
-                    st.warning("Porta já cadastrada.")
-
-                # Se a resposta for diferente de 201 e 400, então:
-                else:
-                    st.warning("Erro ao cadastrar porta.")
-
-            # Se o número da sala não for informado, então:
+    # Botão com estilo personalizado
+    if st.button("Cadastrar Porta", key="cadastro_porta"):
+        if numero_predio and numero_sala:
+            # Realize a requisição para o backend
+            
+            response = requests.post(f"http://127.0.0.1:5000/porta", json={"predio": int(numero_predio), "sala": int(numero_sala), "permissao": nivel_acesso, "excecoes": excecoes_acesso.split(", ")})
+            
+            if response.status_code == 201:
+                st.success("Porta cadastrada com sucesso.")
+            elif response.status_code == 400:
+                st.warning("Porta já cadastrada.")
             else:
-                st.warning("Por favor, insira um número da sala para cadastrar.")
-
-        # Se o número do prédio não for informado, então:
+                st.error("Erro ao cadastrar porta. Tente novamente mais tarde.")
         else:
-            st.warning("Por favor, insira um número do prédio para cadastrar.")
+            st.warning("Por favor, preencha todos os campos.")
+
+# Divisor para separar seções
+st.write("---")
+
+# Rodapé com informações adicionais
+st.markdown("Desenvolvido por [Seu Nome]")
+st.markdown("[GitHub](https://github.com/seu-usuario) | [LinkedIn](https://www.linkedin.com/in/seu-usuario)")
+
+# Adicione cores de fundo e estilização de texto conforme necessário para destacar informações importantes.
+

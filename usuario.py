@@ -29,7 +29,7 @@ if st.button("Gerar QR Code"):
         
         # Se a resposta for 404, então:
         elif response.status_code == 404:
-            st.warning(response.json()["mensagem"])
+            st.warning(response.json()["Usuário não encontrado"])
 
         # Se a resposta for diferente de 200 e 404, então:
         else:
