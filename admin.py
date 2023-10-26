@@ -15,7 +15,7 @@ st.set_page_config(
 st.title("Bem-vindo ao Painel de Administração")
 
 # Criação das abas
-menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso"])
+menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Relatórios"])
 
 # Aba "Cadastrar Usuário"
 if menu == "Cadastrar Usuário":
@@ -196,31 +196,49 @@ if menu == "Testar Acesso":
         else:
             st.warning("Por favor, insira um número do prédio para testar acesso.")
 
+# Aba "Relatórios"
 if menu == "Relatórios":
+    # Título da aba
     st.header("Relatórios de Acesso")
+
+    # Data do relatório
     data = st.selectbox("Data", ['2023-10-26'])
+
     # Campos de entrada para o número do prédio e da sala
     numero_predio = st.text_input("Número do Prédio")
     numero_sala = st.text_input("Número da Sala")
     
     # Botão com estilo personalizado
     if st.button("Gerar relatório", key="gera_relatorios"):
-        if numero_predio and numero_sala:
-            # Realize a requisição GET para o backend
-            
-            response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
-            
-            if response.status_code == 200:
-                data = response.json()
-                acessos_permitidos = data["quantidade_acessos_permitidos"]
-                acessos_negados = data["quantidade_acessos_negados"]
-                st.success(f"{acessos_permitidos} acessos permitidos e {acessos_negados} negados")
-            elif response.status_code == 400:
-                st.warning("Relatório não encontrado.")
+        # Se o número do prédio for informado, então:
+        if numero_predio:
+            # Se o número da sala for infomado, então:
+            if numero_sala:
+                # Realiza a requisição para o backend
+                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
+                
+                # Se a resposta for 200, então:
+                if response.status_code == 200:
+                    data = response.json()
+                    acessos_permitidos = data["quantidade_acessos_permitidos"]
+                    acessos_negados = data["quantidade_acessos_negados"]
+                    st.success(f"{acessos_permitidos} acessos permitidos e {acessos_negados} negados")
+                
+                # Se a resposta for 400, então:
+                elif response.status_code == 400:
+                    st.warning("Relatório não encontrado.")
+                
+                # Se a resposta for diferente de 200 e 400, então:
+                else:
+                    st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+                    
+            # Se o número da sala não for informado, então:
             else:
-                st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+                st.warning("Por favor, insira um número da sala para cadastrar.")
+
+        # Se o número do prédio não for informado, então:
         else:
-            st.warning("Por favor, preencha todos os campos.")
+            st.warning("Por favor, insira um número do prédio para cadastrar.")
 
 # Divisor para separar seções
 st.write("---")
