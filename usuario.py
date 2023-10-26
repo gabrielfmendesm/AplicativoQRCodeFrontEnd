@@ -24,12 +24,12 @@ if st.button("Gerar QR Code"):
             img = Image.open(io.BytesIO(qr_code_data))
 
             # Exibe o QR Code
-            st.markdown(f"QR Code gerado para o usuário: {login_usuario}")
+            st.success(f"QR Code gerado para o usuário: {login_usuario}")
             st.image(img, use_column_width=True)
         
         # Se a resposta for 404, então:
         elif response.status_code == 404:
-            st.warning(response.json()["Usuário não encontrado"])
+            st.warning("Usuário não encontrado")
 
         # Se a resposta for diferente de 200 e 404, então:
         else:
