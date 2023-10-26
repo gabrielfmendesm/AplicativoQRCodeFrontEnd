@@ -196,6 +196,32 @@ if menu == "Testar Acesso":
         else:
             st.warning("Por favor, insira um número do prédio para testar acesso.")
 
+if menu == "Relatórios":
+    st.header("Relatórios de Acesso")
+    data = st.selectbox("Data", ['2023-10-26'])
+    # Campos de entrada para o número do prédio e da sala
+    numero_predio = st.text_input("Número do Prédio")
+    numero_sala = st.text_input("Número da Sala")
+    
+    # Botão com estilo personalizado
+    if st.button("Gerar relatório", key="gera_relatorios"):
+        if numero_predio and numero_sala:
+            # Realize a requisição GET para o backend
+            
+            response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
+            
+            if response.status_code == 200:
+                data = response.json()
+                acessos_permitidos = data["quantidade_acessos_permitidos"]
+                acessos_negados = data["quantidade_acessos_negados"]
+                st.success(f"{acessos_permitidos} acessos permitidos e {acessos_negados} negados")
+            elif response.status_code == 400:
+                st.warning("Relatório não encontrado.")
+            else:
+                st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+        else:
+            st.warning("Por favor, preencha todos os campos.")
+
 # Divisor para separar seções
 st.write("---")
 
