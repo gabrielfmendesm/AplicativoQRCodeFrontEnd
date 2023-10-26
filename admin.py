@@ -15,7 +15,7 @@ st.set_page_config(
 st.title("Bem-vindo ao Painel de Administração")
 
 # Criação das abas
-menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Relatórios"])
+menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios"])
 
 # Aba "Cadastrar Usuário"
 if menu == "Cadastrar Usuário":
@@ -196,13 +196,83 @@ if menu == "Testar Acesso":
         else:
             st.warning("Por favor, insira um número do prédio para testar acesso.")
 
+# Aba "Marcar Presença"
+if menu == "Marcar Presença":
+    # Título da aba
+    st.header("Marcar Presença")
+
+    # Botão com estilo personalizado
+    if st.button("Marcar Presença", key="marcar_presenca"):
+        # Variável para armazenar os dados do QR Code
+        qr_code_data = None
+                
+        # Abre a câmera
+        cap = cv2.VideoCapture(0)
+
+        # Loop para capturar o frame da câmera
+        while True:
+            # Captura o frame da câmera
+            ret, frame = cap.read()
+                    
+            # Se não conseguir acessar câmera, então:
+            if not ret:
+                st.write("Erro ao acessar a câmera.")
+                break
+                    
+            # Instancia o detector de QR Code
+            detector = cv2.QRCodeDetector()
+
+            # Detecta Code
+            data, vertices, _ = detector.detectAndDecode(frame)
+
+            # Se os dados do QR Code forem detectados, então:
+            if data:
+                st.write("Código QR detectado:")
+                st.image(frame, channels="BGR", use_column_width=True)
+
+                # Tenta decodificar o JSON do QR Code
+                try:
+                    # Recebe os dados do QR Code
+                    qr_code_data = json.loads(data)
+
+                    # Recebe login do usuário e armazena na variável
+                    login_usuario = qr_code_data.get("login", None)
+                        
+                # Se não conseguir decodificar o JSON do QR Code, então:
+                except json.JSONDecodeError:
+                    st.warning("Erro ao decodificar o JSON do QR Code.")
+                    qr_code_data = None
+                    login_usuario = None
+                break
+                
+        # Fecha a câmera
+        cap.release()
+
+        # Se o login do usuário for informado, então:
+        if login_usuario:
+            # Realiza a requisição para o backend
+            response = requests.get(f"http://127.0.0.1:5000/presenca/usuario/{login_usuario}")
+
+            # Se a resposta for 201, então:
+            if response.status_code == 201:
+                st.success("Presença cadastrada com sucesso.")
+
+            # Se a resposta for 404, então:
+            elif response.status_code == 403:
+                st.success("Usuário não foi encontrado.")
+
+            # Se a resposta for diferente de 201 e 400, então:
+            else:
+                st.error("Erro ao cadastrar presença. Tente novamente mais tarde.")
+
+
 # Aba "Relatórios"
 if menu == "Relatórios":
     # Título da aba
     st.header("Relatórios de Acesso")
 
     # Data do relatório
-    data = st.selectbox("Data", ['2023-10-2'])
+    data = st.selectbox("Data", ['2023-10-26'])
 
     # Campos de entrada para o número do prédio e da sala
     numero_predio = st.text_input("Número do Prédio")
@@ -214,7 +284,7 @@ if menu == "Relatórios":
         if numero_predio:
             # Se o número da sala for infomado, então:
             if numero_sala:
-                # Realiza a requisição para o backend
+                # Realiza a requisição para o backend   
                 response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
                 
                 # Se a resposta for 200, então:
