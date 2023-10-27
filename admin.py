@@ -14,8 +14,32 @@ st.set_page_config(
 # Estilize o título da página
 st.title("Bem-vindo ao Painel de Administração")
 
+
+
+
 # Criação das abas
 menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios"])
+
+color_gradient_sidebar = st.markdown("""
+    <style>
+        [data-testid=stSidebar] {
+            background-image: linear-gradient(#b8d2fc,white);
+            border-style: solid;
+            border-color: #7a95bf
+;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+color_gradient_background = st.markdown("""
+    <style>
+        [data-testid=stAppViewContainer] {
+            background-image: linear-gradient(#b8d2fc,white);
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+
 
 # Aba "Cadastrar Usuário"
 if menu == "Cadastrar Usuário":
@@ -23,11 +47,47 @@ if menu == "Cadastrar Usuário":
     st.header("Cadastro de Usuário")
 
     # Campo de entrada para o login e nome de usuário
+    
     login_usuario = st.text_input("Login de usuário:")
     nome_usuario = st.text_input("Nome de usuário:")
+    
+    color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+
+    </style>
+    """, unsafe_allow_html=True)
 
     # Campo de entrada para o nível de permisão de usuário
     nivel_usuario = st.selectbox("Nível de permissão de usuário:", [1, 2, 3, 4, 5])
+
+    color_gradient_selectbox = st.markdown("""
+	<style>
+	#root > div:nth-child(1) > div.withScreencast > div > div > div > section.main.st-emotion-cache-uf99v8.ea3mdgi5 > div.block-container.st-emotion-cache-z5fcl4.ea3mdgi4 > div:nth-child(1) > div > div:nth-child(8) > div{
+            border-radius: 20px;
+            padding: 10px;
+            color: black;
+            background-color: #b8d2fc;
+	}
+    #root > div:nth-child(1) > div.withScreencast > div > div > div > section.main.st-emotion-cache-uf99v8.ea3mdgi5 > div.block-container.st-emotion-cache-z5fcl4.ea3mdgi4 > div:nth-child(1) > div > div:nth-child(8) > div > label{
+            color: black;
+    }
+	
+	</style>
+""", unsafe_allow_html=True)
 
     # Botão para cadastrar usuário
     if st.button("Cadastrar Usuário", key="cadastro_usuario"):
