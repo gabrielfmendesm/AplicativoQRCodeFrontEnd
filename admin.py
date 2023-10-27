@@ -14,12 +14,10 @@ st.set_page_config(
 # Estilize o título da página
 st.title("Bem-vindo ao Painel de Administração")
 
-
-
-
 # Criação das abas
 menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios"])
 
+# Estilização das abas
 color_gradient_sidebar = st.markdown("""
     <style>
         [data-testid=stSidebar] {
@@ -40,17 +38,16 @@ color_gradient_background = st.markdown("""
     """, unsafe_allow_html=True)
 
 
-
 # Aba "Cadastrar Usuário"
 if menu == "Cadastrar Usuário":
     # Título da aba
     st.header("Cadastro de Usuário")
 
     # Campo de entrada para o login e nome de usuário
-    
     login_usuario = st.text_input("Login de usuário:")
     nome_usuario = st.text_input("Nome de usuário:")
     
+    # Estilização dos campos de entrada
     color_gradient_inputs = st.markdown("""
     <style>
         [data-testid=stTextInput] {
@@ -74,19 +71,20 @@ if menu == "Cadastrar Usuário":
     # Campo de entrada para o nível de permisão de usuário
     nivel_usuario = st.selectbox("Nível de permissão de usuário:", [1, 2, 3, 4, 5])
 
+    # Estilização do campo de entrada
     color_gradient_selectbox = st.markdown("""
-	<style>
-	#root > div:nth-child(1) > div.withScreencast > div > div > div > section.main.st-emotion-cache-uf99v8.ea3mdgi5 > div.block-container.st-emotion-cache-z5fcl4.ea3mdgi4 > div:nth-child(1) > div > div:nth-child(8) > div{
-            border-radius: 20px;
-            padding: 10px;
-            color: black;
-            background-color: #b8d2fc;
-	}
+        <style>
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.main.st-emotion-cache-uf99v8.ea3mdgi5 > div.block-container.st-emotion-cache-z5fcl4.ea3mdgi4 > div:nth-child(1) > div > div:nth-child(8) > div{
+                border-radius: 20px;
+                padding: 10px;
+                color: black;
+                background-color: #b8d2fc;
+        }
     #root > div:nth-child(1) > div.withScreencast > div > div > div > section.main.st-emotion-cache-uf99v8.ea3mdgi5 > div.block-container.st-emotion-cache-z5fcl4.ea3mdgi4 > div:nth-child(1) > div > div:nth-child(8) > div > label{
-            color: black;
+                color: black;
     }
-	
-	</style>
+                                           
+        </style>
 """, unsafe_allow_html=True)
 
     # Botão para cadastrar usuário
@@ -334,6 +332,12 @@ if menu == "Relatórios":
     # Data do relatório
     data = st.date_input("Data", value='today')
 
+    # Mudar "-" para "/" na data
+    data = data.strftime("%Y/%m/%d")
+
+    # Converter data para string
+    data = str(data)
+
     # Campos de entrada para o número do prédio e da sala
     numero_predio = st.text_input("Número do Prédio")
     numero_sala = st.text_input("Número da Sala")
@@ -353,10 +357,11 @@ if menu == "Relatórios":
                     acessos_permitidos = data["quantidade_acessos_permitidos"]
                     acessos_negados = data["quantidade_acessos_negados"]
                     
-                    # Convert the numeric values to strings
-                    acessos_permitidos_str = str(acessos_permitidos)
-                    acessos_negados_str = str(acessos_negados)
-                    
+                    # Convertendo os dados para string
+                    acessos_permitidos = str(acessos_permitidos)
+                    acessos_negados = str(acessos_negados)
+
+                    # Define o código HTML para o Google Chart  
                     google_chart_html = """
                     <html>
                     <head>
@@ -367,8 +372,8 @@ if menu == "Relatórios":
                         function drawChart() {
                             var data = google.visualization.arrayToDataTable([
                             ['Task', 'Permissões'],
-                            ['Acessos concedidos', """ + acessos_permitidos_str + """],
-                            ['Acessos negados', """ + acessos_negados_str + """],
+                            ['Acessos permitidos', """ + acessos_permitidos + """],
+                            ['Acessos negados', """ + acessos_negados + """],
                             ]);
 
                             var options = {
@@ -388,7 +393,7 @@ if menu == "Relatórios":
                     </html>
                     """
                     
-                    # Use the st.components.v1.html method to display the Google Chart
+                    # Renderiza o gráfico
                     st.components.v1.html(google_chart_html, height=500)
 
                 # Se a resposta for 400, então:
