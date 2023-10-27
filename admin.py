@@ -17,6 +17,27 @@ st.title("Bem-vindo ao Painel de Administração")
 # Criação das abas
 menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios"])
 
+# Estilização das abas
+color_gradient_sidebar = st.markdown("""
+    <style>
+        [data-testid=stSidebar] {
+            background-image: linear-gradient(#b8d2fc,white);
+            border-style: solid;
+            border-color: #7a95bf
+;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+color_gradient_background = st.markdown("""
+    <style>
+        [data-testid=stAppViewContainer] {
+            background-image: linear-gradient(#b8d2fc,white);
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+
 # Aba "Cadastrar Usuário"
 if menu == "Cadastrar Usuário":
     # Título da aba
@@ -25,9 +46,46 @@ if menu == "Cadastrar Usuário":
     # Campo de entrada para o login e nome de usuário
     login_usuario = st.text_input("Login de usuário:")
     nome_usuario = st.text_input("Nome de usuário:")
+    
+    # Estilização dos campos de entrada
+    color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+
+    </style>
+    """, unsafe_allow_html=True)
 
     # Campo de entrada para o nível de permisão de usuário
     nivel_usuario = st.selectbox("Nível de permissão de usuário:", [1, 2, 3, 4, 5])
+
+    # Estilização do campo de entrada
+    color_gradient_selectbox = st.markdown("""
+        <style>
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.main.st-emotion-cache-uf99v8.ea3mdgi5 > div.block-container.st-emotion-cache-z5fcl4.ea3mdgi4 > div:nth-child(1) > div > div:nth-child(8) > div{
+                border-radius: 20px;
+                padding: 10px;
+                color: black;
+                background-color: #b8d2fc;
+        }
+    #root > div:nth-child(1) > div.withScreencast > div > div > div > section.main.st-emotion-cache-uf99v8.ea3mdgi5 > div.block-container.st-emotion-cache-z5fcl4.ea3mdgi4 > div:nth-child(1) > div > div:nth-child(8) > div > label{
+                color: black;
+    }
+                                           
+        </style>
+""", unsafe_allow_html=True)
 
     # Botão para cadastrar usuário
     if st.button("Cadastrar Usuário", key="cadastro_usuario"):
@@ -271,39 +329,45 @@ if menu == "Relatórios":
     st.header("Relatórios de Acesso")
 
     # Data do relatório
-    data = st.text_input("Data no formato ANO/MES/DIA")
+    data = st.date_input("Data", value='today')
+
+    # Mudar "-" para "/" na data
+    data = data.strftime("%Y/%m/%d")
+
+    # Converter data para string
+    data = str(data)
 
     # Campos de entrada para o número do prédio e da sala
     # Botão com estilo personalizado
     if st.button("Gerar relatório", key="gera_relatorios"):
         # Se o número do prédio for informado, então:
                 # Realiza a requisição para o backend   
-        response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data})
-        print(response)
-        # Se a resposta for 200, então:
-        if response.status_code == 200:
-            data = response.json()
-            acessos_permitidos = data["acessos_permitidos"]
-            acessos_negados = data["acessos_negados"]
-            print(acessos_permitidos)
-            st.write(acessos_permitidos)
-            # # Convert the numeric values to strings
-            # acessos_permitidos_str = str(acessos_permitidos)
-            # acessos_negados_str = str(acessos_negados)
-            
-            # google_chart_html = """
-            # <html>
-            # <head>
-            #     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-            #     <script type="text/javascript">
-            #     google.charts.load("current", {packages:["corechart"]});
-            #     google.charts.setOnLoadCallback(drawChart);
-            #     function drawChart() {
-            #         var data = google.visualization.arrayToDataTable([
-            #         ['Task', 'Permissões'],
-            #         ['Acessos concedidos', """ + acessos_permitidos_str + """],
-            #         ['Acessos negados', """ + acessos_negados_str + """],
-            #         ]);
+                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
+                
+                # Se a resposta for 200, então:
+                if response.status_code == 200:
+                    data = response.json()
+                    acessos_permitidos = data["quantidade_acessos_permitidos"]
+                    acessos_negados = data["quantidade_acessos_negados"]
+                    
+                    # Convertendo os dados para string
+                    acessos_permitidos = str(acessos_permitidos)
+                    acessos_negados = str(acessos_negados)
+
+                    # Define o código HTML para o Google Chart  
+                    google_chart_html = """
+                    <html>
+                    <head>
+                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                        <script type="text/javascript">
+                        google.charts.load("current", {packages:["corechart"]});
+                        google.charts.setOnLoadCallback(drawChart);
+                        function drawChart() {
+                            var data = google.visualization.arrayToDataTable([
+                            ['Task', 'Permissões'],
+                            ['Acessos permitidos', """ + acessos_permitidos + """],
+                            ['Acessos negados', """ + acessos_negados + """],
+                            ]);
 
             #         var options = {
             #         title: 'Relatório de acessos',
@@ -311,19 +375,19 @@ if menu == "Relatórios":
             #         colors: ['#008000', '#FF0000'], // Define custom colors for the pie slices
             #     };
 
-            #     var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-            #     chart.draw(data, options);
-            #     }
-            #     </script>
-            # </head>
-            # <body>
-            #     <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
-            # </body>
-            # </html>
-            # """
-            
-            # # Use the st.components.v1.html method to display the Google Chart
-            # st.components.v1.html(google_chart_html, height=500)
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+                        chart.draw(data, options);
+                        }
+                        </script>
+                    </head>
+                    <body>
+                        <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+                    </body>
+                    </html>
+                    """
+                    
+                    # Renderiza o gráfico
+                    st.components.v1.html(google_chart_html, height=500)
 
         # Se a resposta for 400, então:
         elif response.status_code == 400:
