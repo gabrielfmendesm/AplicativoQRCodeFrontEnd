@@ -332,7 +332,7 @@ if menu == "Relatórios":
     st.header("Relatórios de Acesso")
 
     # Data do relatório
-    data = st.selectbox("Data", ['2023-10-26'])
+    data = st.selectbox("Data", ['2023/10/2'])
 
     # Campos de entrada para o número do prédio e da sala
     numero_predio = st.text_input("Número do Prédio")
@@ -352,8 +352,45 @@ if menu == "Relatórios":
                     data = response.json()
                     acessos_permitidos = data["quantidade_acessos_permitidos"]
                     acessos_negados = data["quantidade_acessos_negados"]
-                    st.success(f"{acessos_permitidos} acessos permitidos e {acessos_negados} negados")
-                
+                    
+                    # Convert the numeric values to strings
+                    acessos_permitidos_str = str(acessos_permitidos)
+                    acessos_negados_str = str(acessos_negados)
+                    
+                    google_chart_html = """
+                    <html>
+                    <head>
+                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                        <script type="text/javascript">
+                        google.charts.load("current", {packages:["corechart"]});
+                        google.charts.setOnLoadCallback(drawChart);
+                        function drawChart() {
+                            var data = google.visualization.arrayToDataTable([
+                            ['Task', 'Permissões'],
+                            ['Acessos concedidos', """ + acessos_permitidos_str + """],
+                            ['Acessos negados', """ + acessos_negados_str + """],
+                            ]);
+
+                            var options = {
+                            title: 'Relatório de acessos',
+                            is3D: true,
+                            colors: ['#008000', '#FF0000'], // Define custom colors for the pie slices
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+                        chart.draw(data, options);
+                        }
+                        </script>
+                    </head>
+                    <body>
+                        <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+                    </body>
+                    </html>
+                    """
+                    
+                    # Use the st.components.v1.html method to display the Google Chart
+                    st.components.v1.html(google_chart_html, height=500)
+
                 # Se a resposta for 400, então:
                 elif response.status_code == 400:
                     st.warning("Relatório não encontrado.")
