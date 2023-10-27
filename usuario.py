@@ -38,6 +38,32 @@ color_gradient_inputs = st.markdown("""
 # Campo de entrada para o login de usuário
 login_usuario = st.text_input("Digite o login de usuário:")
 
+color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+
+
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+        }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+color_gradient_background = st.markdown("""
+    <style>
+        [data-testid=stAppViewContainer] {
+            background-image: linear-gradient(#b8d2fc,white);
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+
 # Botão para gerar QR Code
 if st.button("Gerar QR Code"):
         
