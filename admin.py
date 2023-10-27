@@ -265,87 +265,75 @@ if menu == "Marcar Presença":
             else:
                 st.error("Erro ao cadastrar presença. Tente novamente mais tarde.")
 
-
 # Aba "Relatórios"
 if menu == "Relatórios":
     # Título da aba
     st.header("Relatórios de Acesso")
 
     # Data do relatório
-    data = st.selectbox("Data", ['2023/10/2'])
+    data = st.text_input("Data no formato ANO/MES/DIA")
 
     # Campos de entrada para o número do prédio e da sala
-    numero_predio = st.text_input("Número do Prédio")
-    numero_sala = st.text_input("Número da Sala")
-    
     # Botão com estilo personalizado
     if st.button("Gerar relatório", key="gera_relatorios"):
         # Se o número do prédio for informado, então:
-        if numero_predio:
-            # Se o número da sala for infomado, então:
-            if numero_sala:
                 # Realiza a requisição para o backend   
-                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
-                
-                # Se a resposta for 200, então:
-                if response.status_code == 200:
-                    data = response.json()
-                    acessos_permitidos = data["quantidade_acessos_permitidos"]
-                    acessos_negados = data["quantidade_acessos_negados"]
-                    
-                    # Convert the numeric values to strings
-                    acessos_permitidos_str = str(acessos_permitidos)
-                    acessos_negados_str = str(acessos_negados)
-                    
-                    google_chart_html = """
-                    <html>
-                    <head>
-                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-                        <script type="text/javascript">
-                        google.charts.load("current", {packages:["corechart"]});
-                        google.charts.setOnLoadCallback(drawChart);
-                        function drawChart() {
-                            var data = google.visualization.arrayToDataTable([
-                            ['Task', 'Permissões'],
-                            ['Acessos concedidos', """ + acessos_permitidos_str + """],
-                            ['Acessos negados', """ + acessos_negados_str + """],
-                            ]);
+        response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data})
+        print(response)
+        # Se a resposta for 200, então:
+        if response.status_code == 200:
+            data = response.json()
+            acessos_permitidos = data["acessos_permitidos"]
+            acessos_negados = data["acessos_negados"]
+            print(acessos_permitidos)
+            st.write(acessos_permitidos)
+            # # Convert the numeric values to strings
+            # acessos_permitidos_str = str(acessos_permitidos)
+            # acessos_negados_str = str(acessos_negados)
+            
+            # google_chart_html = """
+            # <html>
+            # <head>
+            #     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            #     <script type="text/javascript">
+            #     google.charts.load("current", {packages:["corechart"]});
+            #     google.charts.setOnLoadCallback(drawChart);
+            #     function drawChart() {
+            #         var data = google.visualization.arrayToDataTable([
+            #         ['Task', 'Permissões'],
+            #         ['Acessos concedidos', """ + acessos_permitidos_str + """],
+            #         ['Acessos negados', """ + acessos_negados_str + """],
+            #         ]);
 
-                            var options = {
-                            title: 'Relatório de acessos',
-                            is3D: true,
-                            colors: ['#008000', '#FF0000'], // Define custom colors for the pie slices
-                        };
+            #         var options = {
+            #         title: 'Relatório de acessos',
+            #         is3D: true,
+            #         colors: ['#008000', '#FF0000'], // Define custom colors for the pie slices
+            #     };
 
-                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-                        chart.draw(data, options);
-                        }
-                        </script>
-                    </head>
-                    <body>
-                        <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
-                    </body>
-                    </html>
-                    """
-                    
-                    # Use the st.components.v1.html method to display the Google Chart
-                    st.components.v1.html(google_chart_html, height=500)
+            #     var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+            #     chart.draw(data, options);
+            #     }
+            #     </script>
+            # </head>
+            # <body>
+            #     <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+            # </body>
+            # </html>
+            # """
+            
+            # # Use the st.components.v1.html method to display the Google Chart
+            # st.components.v1.html(google_chart_html, height=500)
 
-                # Se a resposta for 400, então:
-                elif response.status_code == 400:
-                    st.warning("Relatório não encontrado.")
-                
-                # Se a resposta for diferente de 200 e 400, então:
-                else:
-                    st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
-                    
-            # Se o número da sala não for informado, então:
-            else:
-                st.warning("Por favor, insira um número da sala para cadastrar.")
-
-        # Se o número do prédio não for informado, então:
+        # Se a resposta for 400, então:
+        elif response.status_code == 400:
+            st.warning("Relatório não encontrado.")
+        
+        # Se a resposta for diferente de 200 e 400, então:
         else:
-            st.warning("Por favor, insira um número do prédio para cadastrar.")
+            st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+            
+            # Se o número da sala não for informado, então:
 
 # Divisor para separar seções
 st.write("---")
