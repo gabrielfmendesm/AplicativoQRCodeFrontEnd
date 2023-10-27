@@ -332,7 +332,7 @@ if menu == "Relatórios":
     st.header("Relatórios de Acesso")
 
     # Data do relatório
-    data = st.selectbox("Data", ['2023/10/2'])
+    data = st.date_input("Data", value='today')
 
     # Campos de entrada para o número do prédio e da sala
     numero_predio = st.text_input("Número do Prédio")
