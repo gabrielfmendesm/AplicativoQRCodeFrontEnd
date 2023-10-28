@@ -368,6 +368,14 @@ if menu == "Relatórios":
                     else:
                         salas[relatorio["numero_sala"]].append(1)
             print(salas)
+            for sala in salas:
+                if len(salas[sala]) == 1:
+                    if sala in acessos_negados:
+                        salas[sala].append(0)
+                    else:
+                        quantidade = salas[sala][0]
+                        salas[sala] = [quantidade,0]
+            print(salas)
             labels = ["Acessos negados", "Acessos permitidos"]
             import plotly.express as px
             for sala in salas:
