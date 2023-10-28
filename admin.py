@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 import cv2
-
+import matplotlib.pyplot as plt
 # Defina um ícone personalizado para a página
 st.set_page_config(
     page_title="Painel de Admin",
@@ -342,52 +342,42 @@ if menu == "Relatórios":
     if st.button("Gerar relatório", key="gera_relatorios"):
         # Se o número do prédio for informado, então:
                 # Realiza a requisição para o backend   
-                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
-                
-                # Se a resposta for 200, então:
-                if response.status_code == 200:
-                    data = response.json()
-                    acessos_permitidos = data["quantidade_acessos_permitidos"]
-                    acessos_negados = data["quantidade_acessos_negados"]
-                    
-                    # Convertendo os dados para string
-                    acessos_permitidos = str(acessos_permitidos)
-                    acessos_negados = str(acessos_negados)
-
-                    # Define o código HTML para o Google Chart  
-                    google_chart_html = """
-                    <html>
-                    <head>
-                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-                        <script type="text/javascript">
-                        google.charts.load("current", {packages:["corechart"]});
-                        google.charts.setOnLoadCallback(drawChart);
-                        function drawChart() {
-                            var data = google.visualization.arrayToDataTable([
-                            ['Task', 'Permissões'],
-                            ['Acessos permitidos', """ + acessos_permitidos + """],
-                            ['Acessos negados', """ + acessos_negados + """],
-                            ]);
-
-            #         var options = {
-            #         title: 'Relatório de acessos',
-            #         is3D: true,
-            #         colors: ['#008000', '#FF0000'], // Define custom colors for the pie slices
-            #     };
-
-                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-                        chart.draw(data, options);
-                        }
-                        </script>
-                    </head>
-                    <body>
-                        <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
-                    </body>
-                    </html>
-                    """
-                    
-                    # Renderiza o gráfico
-                    st.components.v1.html(google_chart_html, height=500)
+        response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data})
+        print(response.status_code)
+        # Se a resposta for 200, então:
+        if response.status_code == 200:
+            data = response.json()
+            acessos_permitidos = data["acessos_permitidos"]
+            acessos_negados = data["acessos_negados"]
+            salas = {}
+            if (len(acessos_negados) and len(acessos_permitidos)) == 0:
+                st.error('Nenhum acesso em nenhuma sala neste dia!', icon = "⚠️")
+            print(response)
+            for relatorio in acessos_permitidos:
+                lista = []
+                if relatorio["numero_sala"] not in salas:
+                    salas[relatorio["numero_sala"]] = [1]
+                else:
+                    salas[relatorio["numero_sala"]][0] += 1
+            for relatorio in acessos_negados:
+                if relatorio["numero_sala"] not in salas:
+                    salas[relatorio["numero_sala"]] = [0, 1]
+                else:
+                    if len(salas[relatorio["numero_sala"]]) == 2:
+                        salas[relatorio["numero_sala"]][1] += 1
+                    else:
+                        salas[relatorio["numero_sala"]].append(1)
+            print(salas)
+            labels = ["Acessos negados", "Acessos permitidos"]
+            import plotly.express as px
+            for sala in salas:
+                sizes = [salas[sala][1], salas[sala][0]]
+                fig = px.pie(values = sizes, names = labels, title = f'Sala {sala}')
+                st.plotly_chart(fig)
+            # Define o código HTML para o Google Chart  
+           
+            # Renderiza o gráfico
+            #st.components.v1.html(google_chart_html, height=500)
 
         # Se a resposta for 400, então:
         elif response.status_code == 400:
