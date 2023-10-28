@@ -63,8 +63,7 @@ if menu == "Cadastrar Usuário":
             color: black;      
             font-size: 50px;         
             font-weight: bold;  
-        }
-
+        }                                        
     </style>
     """, unsafe_allow_html=True)
 
@@ -121,6 +120,42 @@ if menu == "Cadastrar Porta":
     # Título da aba
     st.header("Cadastro de Porta")
 
+    color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+
+        
+        [data-testid=stSelectbox] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+
+    </style>
+    """, unsafe_allow_html=True)
+
     # Campos de entrada para o número do prédio e da sala
     numero_predio = st.text_input("Número do prédio:")
     numero_sala = st.text_input("Número da sala:")
@@ -167,6 +202,26 @@ if menu == "Cadastrar Porta":
 if menu == "Testar Acesso":
     # Título da aba
     st.header("Testar Acesso")
+
+    color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+
+    </style>
+    """, unsafe_allow_html=True)
 
     # Campo de entrada para o número do prédio
     numero_predio = st.text_input("Digite o número do prédio:")
@@ -327,6 +382,42 @@ if menu == "Marcar Presença":
 if menu == "Relatórios":
     # Título da aba
     st.header("Relatórios de Acesso")
+
+    color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+                                        
+
+        [data-testid=stSelectbox] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+
+    </style>
+    """, unsafe_allow_html=True)
 
     # Data do relatório
     data = st.date_input("Data", value='today')
