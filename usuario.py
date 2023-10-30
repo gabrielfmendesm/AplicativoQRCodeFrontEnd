@@ -7,7 +7,10 @@ from PIL import Image
 # Título do aplicativo
 st.title("Gerador de QR Code")
 
+# Campo de entrada para o login de usuário
+login_usuario = st.text_input("Digite o login de usuário:")
 
+# Estilização do campo de entrada para o login de usuário
 color_gradient_background = st.markdown("""
     <style>
         [data-testid=stAppViewContainer] {
@@ -24,7 +27,6 @@ color_gradient_inputs = st.markdown("""
         padding: 10px;
         background-color: #b8d2fc;
         font-weight: 500;  
-
             
     }
     [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -32,41 +34,11 @@ color_gradient_inputs = st.markdown("""
         font-size: 50px;         
         font-weight: bold;  
     }
-
 </style>
 # """, unsafe_allow_html=True)
-# Campo de entrada para o login de usuário
-login_usuario = st.text_input("Digite o login de usuário:")
-
-color_gradient_inputs = st.markdown("""
-    <style>
-        [data-testid=stTextInput] {
-            margin-bottom: 15px;
-            border-radius: 20px;
-            padding: 10px;
-            background-color: #b8d2fc;
-
-
-        }
-        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
-            color: black;      
-        }
-
-    </style>
-    """, unsafe_allow_html=True)
-
-color_gradient_background = st.markdown("""
-    <style>
-        [data-testid=stAppViewContainer] {
-            background-image: linear-gradient(#b8d2fc,white);
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
 
 # Botão para gerar QR Code
 if st.button("Gerar QR Code"):
-        
     # Se o login de usuário for infomado, então:
     if login_usuario:
         # Realiza a requisição para o backend

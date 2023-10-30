@@ -1,8 +1,10 @@
+import matplotlib.pyplot as plt
+import plotly.express as px
 import streamlit as st
 import requests
 import json
 import cv2
-import matplotlib.pyplot as plt
+
 # Defina um ícone personalizado para a página
 st.set_page_config(
     page_title="Painel de Admin",
@@ -15,7 +17,7 @@ st.set_page_config(
 st.title("Bem-vindo ao Painel de Administração")
 
 # Criação das abas
-menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios"])
+menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios", "Relatórios Gerais"])
 
 # Estilização das abas
 color_gradient_sidebar = st.markdown("""
@@ -63,7 +65,7 @@ if menu == "Cadastrar Usuário":
             color: black;      
             font-size: 50px;         
             font-weight: bold;  
-        }                                        
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -120,6 +122,7 @@ if menu == "Cadastrar Porta":
     # Título da aba
     st.header("Cadastro de Porta")
 
+    # Estilização dos campos de entrada
     color_gradient_inputs = st.markdown("""
     <style>
         [data-testid=stTextInput] {
@@ -128,7 +131,6 @@ if menu == "Cadastrar Porta":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -136,7 +138,6 @@ if menu == "Cadastrar Porta":
             font-size: 50px;         
             font-weight: bold;  
         }
-
         
         [data-testid=stSelectbox] {
             margin-bottom: 15px;
@@ -144,7 +145,6 @@ if menu == "Cadastrar Porta":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -152,7 +152,6 @@ if menu == "Cadastrar Porta":
             font-size: 50px;         
             font-weight: bold;  
         }
-
     </style>
     """, unsafe_allow_html=True)
 
@@ -203,6 +202,7 @@ if menu == "Testar Acesso":
     # Título da aba
     st.header("Testar Acesso")
 
+    # Estilização dos campos de entrada
     color_gradient_inputs = st.markdown("""
     <style>
         [data-testid=stTextInput] {
@@ -211,7 +211,6 @@ if menu == "Testar Acesso":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -219,7 +218,6 @@ if menu == "Testar Acesso":
             font-size: 50px;         
             font-weight: bold;  
         }
-
     </style>
     """, unsafe_allow_html=True)
 
@@ -378,11 +376,13 @@ if menu == "Marcar Presença":
             else:
                 st.error("Erro ao cadastrar presença. Tente novamente mais tarde.")
 
+
 # Aba "Relatórios"
 if menu == "Relatórios":
     # Título da aba
     st.header("Relatórios de Acesso")
 
+    # Estilização dos campos de entrada
     color_gradient_inputs = st.markdown("""
     <style>
         [data-testid=stTextInput] {
@@ -391,7 +391,6 @@ if menu == "Relatórios":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -400,14 +399,12 @@ if menu == "Relatórios":
             font-weight: bold;  
         }
                                         
-
         [data-testid=stSelectbox] {
             margin-bottom: 15px;
             border-radius: 20px;
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -415,7 +412,6 @@ if menu == "Relatórios":
             font-size: 50px;         
             font-weight: bold;  
         }
-
     </style>
     """, unsafe_allow_html=True)
 
@@ -429,65 +425,312 @@ if menu == "Relatórios":
     data = str(data)
 
     # Campos de entrada para o número do prédio e da sala
+    numero_predio = st.text_input("Número do Prédio")
+    numero_sala = st.text_input("Número da Sala")
+    
     # Botão com estilo personalizado
     if st.button("Gerar relatório", key="gera_relatorios"):
         # Se o número do prédio for informado, então:
+        if numero_predio:
+            # Se o número da sala for infomado, então:
+            if numero_sala:
                 # Realiza a requisição para o backend   
-        response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data})
-        print(response.status_code)
+                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
+                
+                # Se a resposta for 200, então:
+                if response.status_code == 200:
+                    data = response.json()
+                    relatorio = data["relatorio"]
+
+                    # Verifique se o dicionário de relatório está vazio
+                    if not relatorio:
+                        st.warning("Nenhum acesso registrado nesse dia.")
+                    
+                    # Se o dicionário de relatório não estiver vazio, então:
+                    else:
+                        # Título do prédio
+                        st.header(f"Prédio {numero_predio}")
+
+                        # Título da sala
+                        st.subheader(f"Sala {numero_sala}")
+
+                        # Percorrendo os acessos
+                        for acesso in relatorio:
+                            # Quantidade de acessos
+                            quantidade_acessos = relatorio[acesso]
+
+                            # Título do acesso
+                            st.write(f"{acesso}: {quantidade_acessos}")
+
+                # Se a resposta for 400, então:
+                elif response.status_code == 400:
+                    st.warning("Relatório não encontrado.")
+
+                # Se a resposta for 404, então:
+                elif response.status_code == 404:
+                    st.warning("Relatório não encontrado.")
+                
+                # Se a resposta for diferente de 200 e 400, então:
+                else:
+                    st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+                    
+            # Se o número da sala não for informado, então:
+            else:
+                st.warning("Por favor, insira um número da sala para cadastrar.")
+
+        # Se o número do prédio não for informado, então:
+        else:
+            st.warning("Por favor, insira um número do prédio para cadastrar.")
+
+    # Botão "Gerar Gráficos" com estilo personalizado
+    if st.button("Gerar Gráficos", key="gera_graficos"):
+        # Se o número do prédio for informado, então:
+        if numero_predio:
+            # Se o número da sala for infomado, então:
+            if numero_sala:
+                # Realiza a requisição para o backend   
+                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
+
+                # Se a resposta for 200, então:
+                if response.status_code == 200:
+                    data = response.json()
+                    relatorio = data["relatorio"]
+
+                    # Verifique se o dicionário de relatório está vazio
+                    if not relatorio:
+                        st.warning("Nenhum acesso registrado nesse dia.")
+                    
+                    # Se o dicionário de relatório não estiver vazio, então:
+                    else:
+                        # Título do prédio
+                        st.header(f"Prédio {numero_predio}")
+
+                        # Título da sala
+                        st.subheader(f"Sala {numero_sala}")
+
+                        # Dados para o gráfico de pizza
+                        acessos_sala = relatorio
+                        acessos_permitidos = acessos_sala.get("ACESSO PERMITIDO", 0)
+                        acessos_negados = acessos_sala.get("ACESSO NEGADO", 0)
+
+                        if acessos_permitidos > 0 or acessos_negados > 0:
+                            # Adicione o código HTML do Google Charts
+                            google_chart_html = f"""
+                            <html>
+                            <head>
+                                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                                <script type="text/javascript">
+                                google.charts.load("current", {{"packages":["corechart"]}});
+                                google.charts.setOnLoadCallback(drawChart);
+                                function drawChart() {{
+                                    var data = google.visualization.arrayToDataTable([
+                                    ['Task', 'Permissões'],
+                                    ['Acessos permitidos', {acessos_permitidos}],
+                                    ['Acessos negados', {acessos_negados}],
+                                    ]);
+
+                                    var options = {{
+                                    title: 'Relatório de acessos',
+                                    is3D: true,
+                                    colors: ['#008000', '#FF0000'], // Define custom colors for the pie slices
+                                }};
+
+                                var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+                                chart.draw(data, options);
+                                }}
+                                </script>
+                            </head>
+                            <body>
+                                <div id="piechart_3d" style="width: 900px; height: 500px;"></div
+                            </body>
+                            </html>
+                            """
+
+                            # Renderiza o gráfico
+                            st.components.v1.html(google_chart_html, height=500)
+
+                # Se a resposta for 400, então:
+                elif response.status_code == 400:
+                    st.warning("Relatório não encontrado.")
+
+                # Se a resposta for diferente de 200 e 400, então:
+                else:
+                    st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+
+            # Se o número da sala não for informado, então:
+            else:
+                st.warning("Por favor, insira um número da sala para cadastrar.")
+
+        # Se o número do prédio não for informado, então:
+        else:
+            st.warning("Por favor, insira um número do prédio para cadastrar.")
+
+
+# Aba "Relatórios Gerais"
+if menu == "Relatórios Gerais":
+    # Título da aba
+    st.header("Relatórios Gerais")
+
+    # Estilização dos campos de entrada
+    color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+                                        
+        [data-testid=stSelectbox] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Data do relatório
+    data = st.date_input("Data", value='today')
+
+    # Mudar "-" para "/" na data
+    data = data.strftime("%Y/%m/%d")
+
+    # Converter data para string
+    data = str(data)
+
+    # Botão com estilo personalizado
+    if st.button("Gerar relatório", key="gera_relatorios_gerais"):
+        # Realiza a requisição para o backend
+        response = requests.get(f"http://127.0.0.1:5000/relatorios/gerais", json={"data": data})
+
         # Se a resposta for 200, então:
         if response.status_code == 200:
             data = response.json()
-            acessos_permitidos = data["acessos_permitidos"]
-            acessos_negados = data["acessos_negados"]
-            salas = {}
-            if (len(acessos_negados) and len(acessos_permitidos)) == 0:
-                st.error('Nenhum acesso em nenhuma sala neste dia!', icon = "⚠️")
-            print(response)
-            for relatorio in acessos_permitidos:
-                lista = []
-                if relatorio["numero_sala"] not in salas:
-                    salas[relatorio["numero_sala"]] = [1]
-                else:
-                    salas[relatorio["numero_sala"]][0] += 1
-            for relatorio in acessos_negados:
-                if relatorio["numero_sala"] not in salas:
-                    salas[relatorio["numero_sala"]] = [0, 1]
-                else:
-                    if len(salas[relatorio["numero_sala"]]) == 2:
-                        salas[relatorio["numero_sala"]][1] += 1
-                    else:
-                        salas[relatorio["numero_sala"]].append(1)
-            print(salas)
-            for sala in salas:
-                if len(salas[sala]) == 1:
-                    if sala in acessos_negados:
-                        salas[sala].append(0)
-                    else:
-                        quantidade = salas[sala][0]
-                        salas[sala] = [quantidade,0]
-            print(salas)
-            labels = ["Acessos negados", "Acessos permitidos"]
-            import plotly.express as px
-            for sala in salas:
-                sizes = [salas[sala][1], salas[sala][0]]
-                fig = px.pie(values = sizes, names = labels, title = f'Sala {sala}')
-                st.plotly_chart(fig)
-            # Define o código HTML para o Google Chart  
-           
-            # Renderiza o gráfico
-            #st.components.v1.html(google_chart_html, height=500)
+            relatorios = data["relatorios"]
+
+            # Verifique se o dicionário de relatórios está vazio
+            if not relatorios:
+                st.warning("Nenhum acesso registrado nesse dia.")
+
+            # Se o dicionário de relatórios não estiver vazio, então:
+            else:
+                # Percorrendo os relatórios
+                for predio in relatorios:
+                    # Título do prédio
+                    st.header(f"Prédio {predio}")
+
+                    # Percorrendo as salas
+                    for sala in relatorios[predio]:
+                        # Título da sala
+                        st.subheader(f"Sala {sala}")
+
+                        # Percorrendo os acessos
+                        for acesso in relatorios[predio][sala]:
+                            # Quantidade de acessos
+                            quantidade_acessos = relatorios[predio][sala][acesso]
+
+                            # Título do acesso
+                            st.write(f"{acesso}: {quantidade_acessos}")
 
         # Se a resposta for 400, então:
         elif response.status_code == 400:
             st.warning("Relatório não encontrado.")
-        
+
         # Se a resposta for diferente de 200 e 400, então:
         else:
             st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
-            
-            # Se o número da sala não for informado, então:
+    
+    # Botão "Gerar Gráficos" com estilo personalizado
+    if st.button("Gerar Gráficos", key="gera_graficos"):
+        # Realiza a requisição para o backend
+        response = requests.get(f"http://127.0.0.1:5000/relatorios/gerais", json={"data": data})
 
+        # Se a resposta for 200, então:
+        if response.status_code == 200:
+            data = response.json()
+            relatorios = data["relatorios"]
+
+            # Verifique se o dicionário de relatórios está vazio
+            if not relatorios:
+                st.warning("Nenhum acesso registrado nesse dia.")
+            
+            # Se o dicionário de relatórios não estiver vazio, então:
+            else:
+                # Percorrendo os relatórios
+                for predio in relatorios:
+                    # Título do prédio
+                    st.header(f"Prédio {predio}")
+
+                    # Percorrendo as salas
+                    for sala in relatorios[predio]:
+                        # Título da sala
+                        st.subheader(f"Sala {sala}")
+
+                        # Dados para o gráfico de pizza
+                        acessos_sala = relatorios[predio][sala]
+                        acessos_permitidos = acessos_sala.get("ACESSO PERMITIDO", 0)
+                        acessos_negados = acessos_sala.get("ACESSO NEGADO", 0)
+
+                        if acessos_permitidos > 0 or acessos_negados > 0:
+                            # Adicione o código HTML do Google Charts
+                            google_chart_html = f"""
+                            <html>
+                            <head>
+                                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                                <script type="text/javascript">
+                                google.charts.load("current", {{"packages":["corechart"]}});
+                                google.charts.setOnLoadCallback(drawChart);
+                                function drawChart() {{
+                                    var data = google.visualization.arrayToDataTable([
+                                    ['Task', 'Permissões'],
+                                    ['Acessos permitidos', {acessos_permitidos}],
+                                    ['Acessos negados', {acessos_negados}],
+                                    ]);
+
+                                    var options = {{
+                                    title: 'Relatório de acessos',
+                                    is3D: true,
+                                    colors: ['#008000', '#FF0000'], // Define custom colors for the pie slices
+                                }};
+
+                                var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+                                chart.draw(data, options);
+                                }}
+                                </script>
+                            </head>
+                            <body>
+                                <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+                            </body>
+                            </html>
+                            """
+
+                            # Renderiza o gráfico
+                            st.components.v1.html(google_chart_html, height=500)
+                            
+        # Se a resposta for 400, então:
+        elif response.status_code == 400:
+            st.warning("Relatório não encontrado.")
+
+        # Se a resposta for diferente de 200 e 400, então:
+        else:
+            st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+
+            
 # Divisor para separar seções
 st.write("---")
 
