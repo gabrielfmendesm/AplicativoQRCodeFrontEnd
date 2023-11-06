@@ -734,8 +734,4 @@ if menu == "Relatórios Gerais":
 # Divisor para separar seções
 st.write("---")
 
-# Rodapé com informações adicionais
-st.markdown("Desenvolvido por [Seu Nome]")
-st.markdown("[GitHub](https://github.com/seu-usuario) | [LinkedIn](https://www.linkedin.com/in/seu-usuario)")
-
 # Adicione cores de fundo e estilização de texto conforme necessário para destacar informações importantes.
