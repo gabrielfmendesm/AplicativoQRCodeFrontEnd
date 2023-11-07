@@ -94,7 +94,7 @@ if menu == "Cadastrar Usuário":
             # Se o nome de usuário for infomado, então:
             if nome_usuario:
                 # Realiza a requisição para o backend
-                response = requests.post(f"http://127.0.0.1:5000/usuario", json={"login": login_usuario, "nome": nome_usuario, "permissao": nivel_usuario})
+                response = requests.post(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/usuario", json={"login": login_usuario, "nome": nome_usuario, "permissao": nivel_usuario})
 
                 # Se a resposta for 201, então:
                 if response.status_code == 201:
@@ -161,7 +161,7 @@ if menu == "Cadastrar Porta":
             # Se o número da sala for infomado, então:
             if numero_sala:
                 # Realiza a requisição para o backend
-                response = requests.post(f"http://127.0.0.1:5000/porta", json={"predio": int(numero_predio), "sala": int(numero_sala), "permissao": nivel_acesso, "excecoes": excecoes_acesso})
+                response = requests.post(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/porta", json={"predio": int(numero_predio), "sala": int(numero_sala), "permissao": nivel_acesso, "excecoes": excecoes_acesso})
 
                 # Se a resposta for 201, então:
                 if response.status_code == 201:
@@ -267,7 +267,7 @@ if menu == "Testar Acesso":
                 # Se o login do usuário for informado, então:
                 if login_usuario:
                     # Realiza a requisição para o backend
-                    response = requests.get(f"http://127.0.0.1:5000/acesso/usuario/{login_usuario}/predio/{numero_predio}/sala/{numero_sala}")
+                    response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/acesso/usuario/{login_usuario}/predio/{numero_predio}/sala/{numero_sala}")
 
                     # Se a resposta for 200, então:
                     if response.status_code == 200:
@@ -348,7 +348,7 @@ if menu == "Marcar Presença":
         # Se o login do usuário for informado, então:
         if login_usuario:
             # Realiza a requisição para o backend
-            response = requests.get(f"http://127.0.0.1:5000/presenca/usuario/{login_usuario}")
+            response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/presenca/usuario/{login_usuario}")
 
             # Se a resposta for 201, então:
             if response.status_code == 201:
@@ -400,7 +400,7 @@ if menu == "Relatórios de Presença":
     # Botão com estilo personalizado
     if st.button("Gerar relatório", key="gera_relatorios"):
         # Realiza a requisição para o backend
-        response = requests.get(f"http://127.0.0.1:5000/presencas", json={"data": data})
+        response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/presencas", json={"data": data})
 
         # Se a resposta for 200, então:
         if response.status_code == 200:
@@ -475,7 +475,7 @@ if menu == "Relatórios de Acesso":
             # Se o número da sala for infomado, então:
             if numero_sala:
                 # Realiza a requisição para o backend   
-                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
+                response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
                 
                 # Se a resposta for 200, então:
                 if response.status_code == 200:
@@ -529,7 +529,7 @@ if menu == "Relatórios de Acesso":
             # Se o número da sala for infomado, então:
             if numero_sala:
                 # Realiza a requisição para o backend   
-                response = requests.get(f"http://127.0.0.1:5000/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
+                response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/relatorios", json={"data": data, "predio": numero_predio, "sala": numero_sala})
 
                 # Se a resposta for 200, então:
                 if response.status_code == 200:
@@ -643,7 +643,7 @@ if menu == "Relatórios Gerais de Acesso":
     # Botão com estilo personalizado
     if st.button("Gerar relatório", key="gera_relatorios_gerais"):
         # Realiza a requisição para o backend
-        response = requests.get(f"http://127.0.0.1:5000/relatorios/gerais", json={"data": data})
+        response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/relatorios/gerais", json={"data": data})
 
         # Se a resposta for 200, então:
         if response.status_code == 200:
@@ -685,7 +685,7 @@ if menu == "Relatórios Gerais de Acesso":
     # Botão "Gerar Gráficos" com estilo personalizado
     if st.button("Gerar Gráficos", key="gera_graficos"):
         # Realiza a requisição para o backend
-        response = requests.get(f"http://127.0.0.1:5000/relatorios/gerais", json={"data": data})
+        response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/relatorios/gerais", json={"data": data})
 
         # Se a resposta for 200, então:
         if response.status_code == 200:
