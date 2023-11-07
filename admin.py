@@ -223,7 +223,7 @@ if menu == "Testar Acesso":
                 qr_code_data = None
                 
                 # Abre a câmera
-                cap = cv2.VideoCapture(0)
+                cap = cv2.VideoCapture(-1)
 
                 # Loop para capturar o frame da câmera
                 while True:
@@ -304,7 +304,7 @@ if menu == "Marcar Presença":
         qr_code_data = None
                 
         # Abre a câmera
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(-1)
 
         # Loop para capturar o frame da câmera
         while True:
