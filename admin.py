@@ -1,9 +1,10 @@
-import matplotlib.pyplot as plt
-import plotly.express as px
 import streamlit as st
+from openpyxl import Workbook
+import pandas as pd
 import requests
 import json
 import cv2
+import io
 
 # Defina um ícone personalizado para a página
 st.set_page_config(
@@ -17,7 +18,7 @@ st.set_page_config(
 st.title("Bem-vindo ao Painel de Administração")
 
 # Criação das abas
-menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios", "Relatórios Gerais"])
+menu = st.sidebar.selectbox("Selecione uma opção:", ["Cadastrar Usuário", "Cadastrar Porta", "Testar Acesso", "Marcar Presença", "Relatórios de Presença", "Relatórios de Acesso", "Relatórios Gerais de Acesso"])
 
 # Estilização das abas
 color_gradient_sidebar = st.markdown("""
@@ -377,8 +378,88 @@ if menu == "Marcar Presença":
                 st.error("Erro ao cadastrar presença. Tente novamente mais tarde.")
 
 
-# Aba "Relatórios"
-if menu == "Relatórios":
+# Aba "Relatórios de Presença"
+if menu == "Relatórios de Presença":
+    # Título da aba
+    st.header("Relatórios de Presença")
+
+    # Estilização dos campos de entrada
+    color_gradient_inputs = st.markdown("""
+    <style>
+        [data-testid=stTextInput] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+                                        
+        [data-testid=stSelectbox] {
+            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: #b8d2fc;
+            font-weight: 500;  
+              
+        }
+        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
+            color: black;      
+            font-size: 50px;         
+            font-weight: bold;  
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Data do relatório
+    data = st.date_input("Data", value='today')
+
+    # Mudar "-" para "/" na data
+    data = data.strftime("%Y/%m/%d")
+
+    # Converter data para string
+    data = str(data)
+
+    # Botão com estilo personalizado
+    if st.button("Gerar relatório", key="gera_relatorios"):
+        # Realiza a requisição para o backend
+        response = requests.get(f"http://127.0.0.1:5000/presencas", json={"data": data})
+
+        # Se a resposta for 200, então:
+        if response.status_code == 200:
+            data = response.json()
+            presencas = data["presencas"]
+
+            # Verifique se o dicionário de presenças está vazio
+            if not presencas:
+                st.warning("Nenhuma presença registrada nesse dia.")
+
+            # Se o dicionário de presenças não estiver vazio, então:
+            else:
+                st.title("Presenças no Dia Escolhido")
+
+                # Converter o dicionário em um DataFrame
+                df = pd.DataFrame(presencas).T
+
+                # Exibir o DataFrame
+                st.dataframe(df)
+
+        # Se a resposta for 400, então:
+        elif response.status_code == 400:
+            st.warning("Relatório não encontrado.")
+
+        # Se a resposta for diferente de 200 e 400, então:
+        else:
+            st.error("Erro ao gerar relatório. Tente novamente mais tarde.")
+
+
+# Aba "Relatórios de Acesso"
+if menu == "Relatórios de Acesso":
     # Título da aba
     st.header("Relatórios de Acesso")
 
@@ -566,10 +647,10 @@ if menu == "Relatórios":
             st.warning("Por favor, insira um número do prédio para cadastrar.")
 
 
-# Aba "Relatórios Gerais"
-if menu == "Relatórios Gerais":
+# Aba "Relatórios Gerais de Acesso"
+if menu == "Relatórios Gerais de Acesso":
     # Título da aba
-    st.header("Relatórios Gerais")
+    st.header("Relatórios Gerais de Acesso")
 
     # Estilização dos campos de entrada
     color_gradient_inputs = st.markdown("""
