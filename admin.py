@@ -221,12 +221,12 @@ if menu == "Testar Acesso":
             if numero_sala:
                 # Variável para armazenar os dados do QR Code
                 qr_code_data = None
-                
-                # Abre a câmera
-                cap = cv2.VideoCapture(-1)
 
                 # Loop para capturar o frame da câmera
                 while True:
+                    # Abre a câmera
+                    cap = cv2.VideoCapture(0)
+
                     # Captura o frame da câmera
                     ret, frame = cap.read()
                     
@@ -302,12 +302,12 @@ if menu == "Marcar Presença":
     if st.button("Marcar Presença", key="marcar_presenca"):
         # Variável para armazenar os dados do QR Code
         qr_code_data = None
-                
-        # Abre a câmera
-        cap = cv2.VideoCapture(-1)
 
         # Loop para capturar o frame da câmera
         while True:
+            # Abre a câmera
+            cap = cv2.VideoCapture(0)
+            
             # Captura o frame da câmera
             ret, frame = cap.read()
                     
