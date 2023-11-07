@@ -42,7 +42,7 @@ if st.button("Gerar QR Code"):
     # Se o login de usuário for infomado, então:
     if login_usuario:
         # Realiza a requisição para o backend
-        response = requests.get(f"http://127.0.0.1:5000/qrcode/usuario/{login_usuario}")
+        response = requests.get(f"https://aplicativoqrcodebackend-7b457e2937a9.herokuapp.com/qrcode/usuario/{login_usuario}")
 
         # Se a resposta for 200, então:
         if response.status_code == 200:
