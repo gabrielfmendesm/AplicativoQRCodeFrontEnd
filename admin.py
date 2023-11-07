@@ -1,10 +1,8 @@
 import streamlit as st
-from openpyxl import Workbook
 import pandas as pd
 import requests
 import json
 import cv2
-import io
 
 # Defina um ícone personalizado para a página
 st.set_page_config(
@@ -132,20 +130,7 @@ if menu == "Cadastrar Porta":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-              
-        }
-        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
-            color: black;      
-            font-size: 50px;         
-            font-weight: bold;  
-        }
-        
-        [data-testid=stSelectbox] {
-            margin-bottom: 15px;
-            border-radius: 20px;
-            padding: 10px;
-            background-color: #b8d2fc;
-            font-weight: 500;  
+
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -392,20 +377,7 @@ if menu == "Relatórios de Presença":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-              
-        }
-        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
-            color: black;      
-            font-size: 50px;         
-            font-weight: bold;  
-        }
-                                        
-        [data-testid=stSelectbox] {
-            margin-bottom: 15px;
-            border-radius: 20px;
-            padding: 10px;
-            background-color: #b8d2fc;
-            font-weight: 500;  
+
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -472,20 +444,7 @@ if menu == "Relatórios de Acesso":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-              
-        }
-        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
-            color: black;      
-            font-size: 50px;         
-            font-weight: bold;  
-        }
-                                        
-        [data-testid=stSelectbox] {
-            margin-bottom: 15px;
-            border-radius: 20px;
-            padding: 10px;
-            background-color: #b8d2fc;
-            font-weight: 500;  
+
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
@@ -661,20 +620,7 @@ if menu == "Relatórios Gerais de Acesso":
             padding: 10px;
             background-color: #b8d2fc;
             font-weight: 500;  
-              
-        }
-        [data-testid=stTextInput] [data-testid=stWidgetLabel] {
-            color: black;      
-            font-size: 50px;         
-            font-weight: bold;  
-        }
-                                        
-        [data-testid=stSelectbox] {
-            margin-bottom: 15px;
-            border-radius: 20px;
-            padding: 10px;
-            background-color: #b8d2fc;
-            font-weight: 500;  
+
               
         }
         [data-testid=stTextInput] [data-testid=stWidgetLabel] {
